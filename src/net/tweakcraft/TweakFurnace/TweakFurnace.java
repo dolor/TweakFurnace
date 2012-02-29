@@ -4,8 +4,7 @@ import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
 import com.zones.Zones;
 import com.zones.model.ZoneBase;
-import net.tweakcraft.TweakFurnace.Listeners.TFBlockListener;
-import net.tweakcraft.TweakFurnace.Listeners.TFPlayerListener;
+import net.tweakcraft.TweakFurnace.Listeners.*;
 import net.tweakcraft.TweakFurnace.Packages.Items;
 import net.tweakcraft.TweakFurnace.Packages.TFInventoryUtils;
 import org.bukkit.ChatColor;
@@ -29,7 +28,7 @@ public class TweakFurnace extends JavaPlugin {
     private static final Logger log = Logger.getLogger("Minecraft");
     private TFPlayerListener playerListener = new TFPlayerListener(this);
     private TFBlockListener blockListener = new TFBlockListener();
-    // private TFInventoryListener inventoryListener = new TFInventoryListener(this);
+    private TFInventoryListener inventoryListener = new TFInventoryListener(this);
     private HashSet<Player> muteList = new HashSet<Player>();
     private Zones zonesPlugin;
     private PermissionHandler permissionsPlugin;
@@ -55,6 +54,7 @@ public class TweakFurnace extends JavaPlugin {
         //this.getServer().getPluginManager().registerEvent(Event.Type.FURNACE_SMELT, inventoryListener, Event.Priority.Lowest, this);
         this.getServer().getPluginManager().registerEvents(playerListener, this);
         this.getServer().getPluginManager().registerEvents(blockListener, this);
+        this.getServer().getPluginManager().registerEvents(inventoryListener, this);
         
     }
 
