@@ -7,6 +7,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Furnace;
 import org.bukkit.inventory.ItemStack;
 
+import com.zones.util.Log;
+
 /**
  * @author GuntherDW, Edoxile
  */
@@ -66,6 +68,7 @@ public class TFurnace {
     }
 
     public void setFuel(ItemStack stack) {
+    	System.out.println("    TFurnace now putting " + stack.toString() + " in furnace as fuel.");
         this.furnace.getInventory().setItem(invSpot.FUEL.getSpot(), stack);
     }
 

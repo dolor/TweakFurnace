@@ -4,17 +4,13 @@ import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import com.zones.util.Log;
-
 import java.util.HashMap;
-import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA. User: Edoxile
  */
 public class TFInventoryUtils {
 	private static HashMap<Player, Integer> playerAmountMap = new HashMap<Player, Integer>();
-    private static final Logger log = Logger.getLogger("Minecraft");
 
 	public static void setCustomPlayerAmount(Player player, int amount) {
 		playerAmountMap.put(player, amount);
@@ -58,18 +54,73 @@ public class TFInventoryUtils {
 		return (toRemove == null ? 0 : toRemove.getAmount());
 	}
 
-	public static ItemStack removeFuel(Player player, Chest chest) {
-		log.info("Chest contains " + chest.getInventory().getSize() + " stacks");
+	/**
+	 * Removes the first stack of fuel found from the chest and returns the fuel as an itemstack
+	 * @param player can be null
+	 * @param chest
+	 * @return fuel removed from the chest
+	 */
+	public static ItemStack removeFuel(Chest chest) {
+		//TODO: Is best to just take the first itemstack or to try and get a full stack from the chest?
+		ItemStack returnStack = null;
+		int a = 0;
 		for (ItemStack stack : chest.getInventory().getContents()) {
 			if (stack != null && stack.getAmount() > 0) {
-				log.info("Checking a stack of " + stack.getType().name() + " with " + stack.getAmount() + " items.");
 				if (Items.isFuel(stack.getTypeId())) {
-					removeMaterials(player, chest, stack);
-					return stack;
+					a++;
+					if (returnStack == null) {
+						System.out.println("Found useable fuel!");
+						chest.getInventory().removeItem(stack);
+						//chest.getInventory().remove(stack);
+						returnStack = stack.clone();
+					}
 				}
 			}
 		}
-		return null;
+		System.out.println("Found " + a + " stacks of fuel.");
+		return returnStack;
+	}
+		
+	/**
+	 * Removes the first stack of smeltable material found from the chest and returns the material as an itemstack
+	 * @param player can be null
+	 * @param chest
+	 * @return smeltable material removed from the chest
+	 */
+	public static ItemStack removeSmelt(Chest chest) {
+		int a = 0;
+		ItemStack returnStack = null;
+		for (ItemStack stack : chest.getInventory().getContents()) {
+			if (stack != null && stack.getAmount() > 0 && Items.isSmeltable(stack.getTypeId())) {
+				a++;
+				if (returnStack == null) {
+					returnStack = stack;
+					chest.getInventory().removeItem(returnStack);
+				}
+			}
+		}
+		System.out.println("Found " + a + " smeltable stacks.");
+		return returnStack;
+	}
+	
+	/**
+	 * Tries to add the items from the ItemStack to the chest, returns what's left
+	 * @param chest
+	 * @param stack items to add to the chest
+	 * @return items that could not be added
+	 */
+	public static ItemStack addMaterials(Chest chest, ItemStack stack) {
+		for (ItemStack slot : chest.getInventory().getContents()) {
+			if (stack.getAmount() == 0)
+				return null;
+			
+			if (slot != null && slot.getType() == stack.getType() && slot.getAmount() < 64) {
+				int i = stack.getAmount() - (64 - slot.getAmount()); //Items that can be put in
+				stack.setAmount(stack.getAmount() - i);
+				slot.setAmount(slot.getAmount() + i);
+			}
+		}
+		return stack.getAmount() == 0?null:stack;
 	}
 
 	public static int addMaterials(Player player, Chest chest, ItemStack toAdd) {
